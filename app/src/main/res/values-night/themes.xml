@@ -1,0 +1,28 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Kalender" parent="Theme.Material3Expressive.Dark.NoActionBar">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="fontFamily">@font/poppins</item>
+
+        <item name="android:navigationBarColor">
+            @android:color/transparent
+        </item>
+
+        <item name="android:statusBarColor">
+            @android:color/transparent
+        </item>
+
+        <item name="android:windowLightStatusBar">
+            false
+        </item>
+    </style>
+
+    <style name="DayLabelStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelSmall</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+</resources>
