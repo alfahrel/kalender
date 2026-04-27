@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kalender</string>
+
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_section_calendar">Kalender</string>
+    <string name="settings_section_other">Lainnya</string>
+    <string name="settings_country">Negara</string>
+    <string name="settings_first_day">Hari pertama minggu</string>
+    <string name="settings_language">Bahasa</string>
+    <string name="settings_privacy">Kebijakan privasi</string>
+    <string name="settings_about">Tentang aplikasi</string>
+    <string name="settings_version">Versi %s</string>
+
+    <string name="picker_country_title">Pilih Negara</string>
+    <string name="picker_cancel">Batal</string>
+    <string name="country_indonesia">Indonesia</string>
+    <string name="country_germany">Jerman</string>
+
+    <string name="picker_language_title">Pilih Bahasa</string>
+    <string name="language_english">Inggris</string>
+    <string name="language_indonesian">Indonesia</string>
+    <string name="language_german">Jerman</string>
+
+    <string name="no_holiday">Tidak ada hari libur nasional bulan ini.</string>
+    <string name="prev_month">Bulan sebelumnya</string>
+    <string name="next_month">Bulan berikutnya</string>
+    <string name="back_to_current">Kembali ke bulan ini</string>
+
+    <string name="day_mon">Sen</string>
+    <string name="day_tue">Sel</string>
+    <string name="day_wed">Rab</string>
+    <string name="day_thu">Kam</string>
+    <string name="day_fri">Jum</string>
+    <string name="day_sat">Sab</string>
+    <string name="day_sun">Min</string>
+
+    <string-array name="month_names">
+        <item>Januari</item>
+        <item>Februari</item>
+        <item>Maret</item>
+        <item>April</item>
+        <item>Mei</item>
+        <item>Juni</item>
+        <item>Juli</item>
+        <item>Agustus</item>
+        <item>September</item>
+        <item>Oktober</item>
+        <item>November</item>
+        <item>Desember</item>
+    </string-array>
+</resources>

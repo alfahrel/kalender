@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kalender.alfahrel.my.id.MainActivity
 import kalender.alfahrel.my.id.R
 import kalender.alfahrel.my.id.adapter.CalendarAdapter
-import kalender.alfahrel.my.id.data.HolidaysData.allHolidays
 import kalender.alfahrel.my.id.model.CalendarDay
 import java.util.Calendar
 
@@ -46,28 +45,66 @@ class MonthFragment : Fragment() {
         rvCalendar.adapter = CalendarAdapter(buildDayList(year, month))
     }
 
+    private fun getHolidays() =
+        (requireActivity() as MainActivity).getCurrentHolidays()
+
     private fun buildDayList(year: Int, month: Int): List<CalendarDay> {
+        val holidays = getHolidays()
         val days = mutableListOf<CalendarDay>()
         val tmpCal = Calendar.getInstance().apply { set(year, month, 1) }
-
-        var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 2
-        if (firstDow < 0) firstDow = 6
-        repeat(firstDow) { days.add(CalendarDay(0, false, false, false, null, null, null)) }
-
-        val daysInMonth = tmpCal.getActualMaximum(Calendar.DAY_OF_MONTH)
         val today = Calendar.getInstance()
 
+        // Leading trailing (prev month)
+        var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 2
+        if (firstDow < 0) firstDow = 6
+
+        val prevCal = Calendar.getInstance().apply {
+            set(year, month, 1)
+            add(Calendar.DAY_OF_MONTH, -firstDow)
+        }
+        repeat(firstDow) {
+            val d = prevCal.get(Calendar.DAY_OF_MONTH)
+            val m = prevCal.get(Calendar.MONTH)
+            val y = prevCal.get(Calendar.YEAR)
+            val dow = prevCal.get(Calendar.DAY_OF_WEEK)
+            val key = String.format("%04d-%02d-%02d", y, m + 1, d)
+            val entry = holidays[key]
+            days.add(CalendarDay(d, false, entry != null, dow == Calendar.SUNDAY, false, entry?.name, entry?.description, entry?.type, isTrailing = true))
+            prevCal.add(Calendar.DAY_OF_MONTH, 1)
+        }
+
+        // Current month days
+        val daysInMonth = tmpCal.getActualMaximum(Calendar.DAY_OF_MONTH)
         for (day in 1..daysInMonth) {
             tmpCal.set(year, month, day)
             val dow = tmpCal.get(Calendar.DAY_OF_WEEK)
-            val isSunday = dow == Calendar.SUNDAY
             val key = String.format("%04d-%02d-%02d", year, month + 1, day)
-            val entry = allHolidays[key]
+            val entry = holidays[key]
             val isToday = year == today.get(Calendar.YEAR)
                     && month == today.get(Calendar.MONTH)
                     && day == today.get(Calendar.DAY_OF_MONTH)
-            days.add(CalendarDay(day, isToday, entry != null, isSunday, entry?.name, entry?.description, entry?.type))
+            days.add(CalendarDay(day, isToday, entry != null, dow == Calendar.SUNDAY, dow == Calendar.SATURDAY, entry?.name, entry?.description, entry?.type))
         }
+
+        // Trailing (next month)
+        val remainder = days.size % 7
+        if (remainder != 0) {
+            val nextCal = Calendar.getInstance().apply {
+                set(year, month, daysInMonth)
+                add(Calendar.DAY_OF_MONTH, 1)
+            }
+            repeat(7 - remainder) {
+                val d = nextCal.get(Calendar.DAY_OF_MONTH)
+                val m = nextCal.get(Calendar.MONTH)
+                val y = nextCal.get(Calendar.YEAR)
+                val dow = nextCal.get(Calendar.DAY_OF_WEEK)
+                val key = String.format("%04d-%02d-%02d", y, m + 1, d)
+                val entry = holidays[key]
+                days.add(CalendarDay(d, false, entry != null, dow == Calendar.SUNDAY, false, entry?.name, entry?.description, entry?.type, isTrailing = true))
+                nextCal.add(Calendar.DAY_OF_MONTH, 1)
+            }
+        }
+
         return days
     }
 }

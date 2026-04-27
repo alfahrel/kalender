@@ -13,8 +13,8 @@ android {
         applicationId = "kalender.alfahrel.my.id"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0-alpha"
+        versionCode = 2
+        versionName = "1.2-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -44,15 +44,15 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp">
 
-                <TextView style="@style/DayLabelStyle" android:text="Sen" />
-                <TextView style="@style/DayLabelStyle" android:text="Sel" />
-                <TextView style="@style/DayLabelStyle" android:text="Rab" />
-                <TextView style="@style/DayLabelStyle" android:text="Kam" />
-                <TextView style="@style/DayLabelStyle" android:text="Jum" />
-                <TextView style="@style/DayLabelStyle" android:text="Sab" />
+                <TextView style="@style/DayLabelStyle" android:text="@string/day_mon" />
+                <TextView style="@style/DayLabelStyle" android:text="@string/day_tue" />
+                <TextView style="@style/DayLabelStyle" android:text="@string/day_wed" />
+                <TextView style="@style/DayLabelStyle" android:text="@string/day_thu" />
+                <TextView style="@style/DayLabelStyle" android:text="@string/day_fri" />
+                <TextView style="@style/DayLabelStyle" android:text="@string/day_sat" />
                 <TextView
                     style="@style/DayLabelStyle"
-                    android:text="Min"
+                    android:text="@string/day_sun"
                     android:textColor="?attr/colorError" />
 
             </LinearLayout>
@@ -61,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+                app:cardBackgroundColor="@color/transparent"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
@@ -115,7 +115,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Tidak ada hari libur nasional bulan ini."
+                    android:text="@string/no_holiday"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:gravity="center" />
@@ -161,7 +161,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/ic_outline_arrow_left_alt_24"
-                    android:contentDescription="Bulan sebelumnya"
+                    android:contentDescription="@string/prev_month"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:tint="?attr/colorOnPrimaryContainer" />
 
@@ -180,7 +180,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/ic_outline_arrow_right_alt_24"
-                    android:contentDescription="Bulan berikutnya"
+                    android:contentDescription="@string/next_month"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:tint="?attr/colorOnPrimaryContainer" />
 
@@ -193,7 +193,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_today_24"
-            android:contentDescription="Kembali ke bulan ini"
+            android:contentDescription="@string/back_to_current"
             app:tint="?attr/colorOnPrimary"
             app:elevation="0dp"
             app:hoveredFocusedTranslationZ="0dp"

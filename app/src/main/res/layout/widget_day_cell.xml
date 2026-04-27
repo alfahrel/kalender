@@ -11,6 +11,7 @@
         android:layout_gravity="center" />
 
     <TextView
+
         android:id="@+id/widget_tv_day"
         android:layout_width="28dp"
         android:layout_height="28dp"

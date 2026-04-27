@@ -5,27 +5,16 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
 import android.net.Uri
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import androidx.core.graphics.ColorUtils
 import kalender.alfahrel.my.id.MainActivity
 import kalender.alfahrel.my.id.R
-import kalender.alfahrel.my.id.data.HolidaysData.allHolidays
+import kalender.alfahrel.my.id.data.AppPreferences
+import kalender.alfahrel.my.id.data.CountryHolidays
+import kalender.alfahrel.my.id.util.LocaleHelper
 import java.util.Calendar
-
-fun circleBitmap(color: Int, sizePx: Int): Bitmap {
-    val bmp = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bmp)
-    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
-    val r = sizePx / 2f
-    canvas.drawCircle(r, r, r, paint)
-    return bmp
-}
 
 class CalendarWidget : AppWidgetProvider() {
 
@@ -52,18 +41,13 @@ class CalendarWidget : AppWidgetProvider() {
         if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) return
 
         val current = getOffset(ctx, widgetId)
-        Log.d(TAG, "currentOffset=$current")
-
         val newOffset = when (intent.action) {
             ACTION_PREV -> current - 1
             ACTION_NEXT -> current + 1
             else -> current
         }
 
-        Log.d(TAG, "newOffset=$newOffset")
-
         setOffset(ctx, widgetId, newOffset)
-
         updateWidget(ctx, AppWidgetManager.getInstance(ctx), widgetId)
     }
 
@@ -78,6 +62,8 @@ class CalendarWidget : AppWidgetProvider() {
     }
 
     private fun updateWidget(ctx: Context, mgr: AppWidgetManager, widgetId: Int) {
+        val language = AppPreferences.getLanguage(ctx)
+        val localizedCtx = LocaleHelper.applyLocale(ctx, language.localeCode)
 
         val offset = getOffset(ctx, widgetId)
         val cal = Calendar.getInstance().apply { add(Calendar.MONTH, offset) }
@@ -87,37 +73,24 @@ class CalendarWidget : AppWidgetProvider() {
 
         Log.d(TAG, "updateWidget widgetId=$widgetId year=$year month=$month offset=$offset")
 
+        val monthNames = localizedCtx.resources.getStringArray(R.array.month_names)
+        val monthYearText = "${monthNames[month]} $year"
+
+        // Full views update
         val views = RemoteViews(ctx.packageName, R.layout.widget_calendar)
 
-        val monthNames = listOf(
-            "Januari","Februari","Maret","April","Mei","Juni",
-            "Juli","Agustus","September","Oktober","November","Desember"
-        )
+        views.setTextViewText(R.id.widget_tv_month_year, monthYearText)
 
-        views.setTextViewText(R.id.widget_tv_month_year, "${monthNames[month]} $year")
+        views.setTextViewText(R.id.widget_label_sen, localizedCtx.getString(R.string.day_mon))
+        views.setTextViewText(R.id.widget_label_sel, localizedCtx.getString(R.string.day_tue))
+        views.setTextViewText(R.id.widget_label_rab, localizedCtx.getString(R.string.day_wed))
+        views.setTextViewText(R.id.widget_label_kam, localizedCtx.getString(R.string.day_thu))
+        views.setTextViewText(R.id.widget_label_jum, localizedCtx.getString(R.string.day_fri))
+        views.setTextViewText(R.id.widget_label_sab, localizedCtx.getString(R.string.day_sat))
+        views.setTextViewText(R.id.widget_label_min, localizedCtx.getString(R.string.day_sun))
 
-        val colorTextPrimary = 0xFF222222.toInt()
-        val colorTextSecondary = 0xFF666666.toInt()
-        val colorSunday = 0xFFD32F2F.toInt()
-
-        views.setTextColor(R.id.widget_tv_month_year, colorTextPrimary)
-
-        listOf(
-            R.id.widget_label_sen, R.id.widget_label_sel, R.id.widget_label_rab,
-            R.id.widget_label_kam, R.id.widget_label_jum, R.id.widget_label_sab
-        ).forEach { views.setTextColor(it, colorTextSecondary) }
-
-        views.setTextColor(R.id.widget_label_min, colorSunday)
-
-        views.setOnClickPendingIntent(
-            R.id.widget_btn_prev,
-            buildIntent(ctx, widgetId, ACTION_PREV)
-        )
-
-        views.setOnClickPendingIntent(
-            R.id.widget_btn_next,
-            buildIntent(ctx, widgetId, ACTION_NEXT)
-        )
+        views.setOnClickPendingIntent(R.id.widget_btn_prev, buildIntent(ctx, widgetId, ACTION_PREV))
+        views.setOnClickPendingIntent(R.id.widget_btn_next, buildIntent(ctx, widgetId, ACTION_NEXT))
 
         val serviceIntent = Intent(ctx, CalendarWidgetService::class.java).apply {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
@@ -125,8 +98,6 @@ class CalendarWidget : AppWidgetProvider() {
             putExtra("month", month)
             data = Uri.parse("widget://$widgetId/$year/$month")
         }
-
-        Log.d(TAG, "setRemoteAdapter widgetId=$widgetId")
 
         views.setRemoteAdapter(R.id.widget_grid_calendar, serviceIntent)
 
@@ -139,14 +110,19 @@ class CalendarWidget : AppWidgetProvider() {
 
         views.setPendingIntentTemplate(R.id.widget_grid_calendar, openApp)
 
-        mgr.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_grid_calendar)
+        // Apply full update first
         mgr.updateAppWidget(widgetId, views)
+
+        // Then partial update ONLY for the month/year text to ensure it always syncs
+        val partialViews = RemoteViews(ctx.packageName, R.layout.widget_calendar)
+        partialViews.setTextViewText(R.id.widget_tv_month_year, monthYearText)
+        mgr.partiallyUpdateAppWidget(widgetId, partialViews)
+
+        // Notify grid last so it doesn't race with the text update
+        mgr.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_grid_calendar)
     }
 
     private fun buildIntent(ctx: Context, widgetId: Int, action: String): PendingIntent {
-
-        Log.d(TAG, "buildIntent widgetId=$widgetId action=$action")
-
         val intent = Intent(ctx, CalendarWidget::class.java).apply {
             this.action = action
             putExtra(EXTRA_WIDGET, widgetId)
@@ -167,17 +143,13 @@ class CalendarWidget : AppWidgetProvider() {
         )
     }
 
-    private fun getOffset(ctx: Context, widgetId: Int): Int {
-        val prefs = ctx.getSharedPreferences("calendar_widget", Context.MODE_PRIVATE)
-        val value = prefs.getInt("offset_$widgetId", 0)
-        Log.d(TAG, "getOffset widgetId=$widgetId value=$value")
-        return value
-    }
+    private fun getOffset(ctx: Context, widgetId: Int): Int =
+        ctx.getSharedPreferences("calendar_widget", Context.MODE_PRIVATE)
+            .getInt("offset_$widgetId", 0)
 
     private fun setOffset(ctx: Context, widgetId: Int, value: Int) {
-        Log.d(TAG, "setOffset widgetId=$widgetId value=$value")
-        val prefs = ctx.getSharedPreferences("calendar_widget", Context.MODE_PRIVATE)
-        prefs.edit().putInt("offset_$widgetId", value).apply()
+        ctx.getSharedPreferences("calendar_widget", Context.MODE_PRIVATE)
+            .edit().putInt("offset_$widgetId", value).apply()
     }
 }
 
@@ -197,13 +169,18 @@ class CalendarFactory(
         val day: Int,
         val isToday: Boolean,
         val isHoliday: Boolean,
-        val isSunday: Boolean
+        val isSunday: Boolean,
+        val isSaturday: Boolean = false,
+        val isTrailing: Boolean = false
     )
 
     private val cells = mutableListOf<CellData>()
     private val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
     private var year = intent.getIntExtra("year", Calendar.getInstance().get(Calendar.YEAR))
     private var month = intent.getIntExtra("month", Calendar.getInstance().get(Calendar.MONTH))
+
+    // Read holidays from the saved country preference
+    private fun getHolidays() = CountryHolidays.getHolidays(AppPreferences.getCountry(ctx))
 
     private fun refreshYearMonth() {
         val prefs = ctx.getSharedPreferences("calendar_widget", Context.MODE_PRIVATE)
@@ -228,16 +205,32 @@ class CalendarFactory(
     override fun onDestroy() {}
 
     private fun load() {
-        Log.d("CalendarWidget", "load start")
         cells.clear()
 
+        val holidays = getHolidays()
         val tmpCal = Calendar.getInstance().apply { set(year, month, 1) }
         val today = Calendar.getInstance()
 
         var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 2
         if (firstDow < 0) firstDow = 6
 
-        repeat(firstDow) { cells.add(CellData(0, false, false, false)) }
+        if (firstDow > 0) {
+            val prevCal = Calendar.getInstance().apply {
+                set(year, month, 1)
+                add(Calendar.DAY_OF_MONTH, -firstDow)
+            }
+            for (i in 0 until firstDow) {
+                val d = prevCal.get(Calendar.DAY_OF_MONTH)
+                val m = prevCal.get(Calendar.MONTH)
+                val y = prevCal.get(Calendar.YEAR)
+                val dow = prevCal.get(Calendar.DAY_OF_WEEK)
+                val isSunday = dow == Calendar.SUNDAY
+                val key = String.format("%04d-%02d-%02d", y, m + 1, d)
+                val isHol = holidays.containsKey(key)
+                cells.add(CellData(d, false, isHol, isSunday, isTrailing = true))
+                prevCal.add(Calendar.DAY_OF_MONTH, 1)
+            }
+        }
 
         val daysInMonth = tmpCal.getActualMaximum(Calendar.DAY_OF_MONTH)
 
@@ -245,13 +238,33 @@ class CalendarFactory(
             tmpCal.set(year, month, day)
             val dow = tmpCal.get(Calendar.DAY_OF_WEEK)
             val isSunday = dow == Calendar.SUNDAY
+            val isSaturday = dow == Calendar.SATURDAY
             val key = String.format("%04d-%02d-%02d", year, month + 1, day)
-            val isHol = allHolidays.containsKey(key)
+            val isHol = holidays.containsKey(key)
             val isToday = year == today.get(Calendar.YEAR)
                     && month == today.get(Calendar.MONTH)
                     && day == today.get(Calendar.DAY_OF_MONTH)
+            cells.add(CellData(day, isToday, isHol, isSunday, isSaturday))
+        }
 
-            cells.add(CellData(day, isToday, isHol, isSunday))
+        val remainder = cells.size % 7
+        if (remainder != 0) {
+            val nextCal = Calendar.getInstance().apply {
+                set(year, month, daysInMonth)
+                add(Calendar.DAY_OF_MONTH, 1)
+            }
+            val trailingCount = 7 - remainder
+            for (i in 0 until trailingCount) {
+                val d = nextCal.get(Calendar.DAY_OF_MONTH)
+                val m = nextCal.get(Calendar.MONTH)
+                val y = nextCal.get(Calendar.YEAR)
+                val dow = nextCal.get(Calendar.DAY_OF_WEEK)
+                val isSunday = dow == Calendar.SUNDAY
+                val key = String.format("%04d-%02d-%02d", y, m + 1, d)
+                val isHol = holidays.containsKey(key)
+                cells.add(CellData(d, false, isHol, isSunday, isTrailing = true))
+                nextCal.add(Calendar.DAY_OF_MONTH, 1)
+            }
         }
 
         Log.d("CalendarWidget", "load complete size=${cells.size}")
@@ -260,48 +273,38 @@ class CalendarFactory(
     override fun getCount(): Int = cells.size
 
     override fun getViewAt(position: Int): RemoteViews {
-        Log.d("CalendarWidget", "getViewAt position=$position")
-
-        val views = RemoteViews(ctx.packageName, R.layout.widget_day_cell)
-
-        if (position >= cells.size) return views
+        if (position >= cells.size) return RemoteViews(ctx.packageName, R.layout.widget_day_cell_normal)
 
         val cell = cells[position]
 
-        views.setTextViewText(R.id.widget_tv_day, "")
-        views.setImageViewBitmap(R.id.widget_iv_circle, null)
+        if (cell.day == 0) return RemoteViews(ctx.packageName, R.layout.widget_day_cell_normal)
 
-        if (cell.day == 0) return views
-
-        views.setTextViewText(R.id.widget_tv_day, cell.day.toString())
-
-        val sizePx = (24 * ctx.resources.displayMetrics.density).toInt()
-
-        when {
-            cell.isToday -> {
-                views.setImageViewBitmap(R.id.widget_iv_circle, circleBitmap(0xFF6200EE.toInt(), sizePx))
-                views.setTextColor(R.id.widget_tv_day, 0xFFFFFFFF.toInt())
+        if (cell.isTrailing) {
+            val layout = when {
+                cell.isHoliday -> R.layout.widget_day_cell_trailing_holiday
+                cell.isSunday  -> R.layout.widget_day_cell_trailing_sunday
+                else           -> R.layout.widget_day_cell_trailing
             }
-            cell.isHoliday -> {
-                views.setImageViewBitmap(
-                    R.id.widget_iv_circle,
-                    circleBitmap(ColorUtils.setAlphaComponent(0xFFBB86FC.toInt(), 180), sizePx)
-                )
-                views.setTextColor(R.id.widget_tv_day, 0xFFD32F2F.toInt())
-            }
-            cell.isSunday -> {
-                views.setTextColor(R.id.widget_tv_day, 0xFFD32F2F.toInt())
-            }
-            else -> {
-                views.setTextColor(R.id.widget_tv_day, 0xFF222222.toInt())
+            return RemoteViews(ctx.packageName, layout).also {
+                it.setTextViewText(R.id.widget_tv_day, cell.day.toString())
             }
         }
 
-        return views
+        val layout = when {
+            cell.isToday    -> R.layout.widget_day_cell_today
+            cell.isHoliday  -> R.layout.widget_day_cell_holiday
+            cell.isSunday   -> R.layout.widget_day_cell_sunday
+            cell.isSaturday -> R.layout.widget_day_cell_saturday
+            else            -> R.layout.widget_day_cell_normal
+        }
+
+        return RemoteViews(ctx.packageName, layout).also {
+            it.setTextViewText(R.id.widget_tv_day, cell.day.toString())
+        }
     }
 
     override fun getLoadingView() = null
-    override fun getViewTypeCount() = 1
+    override fun getViewTypeCount() = 7
     override fun getItemId(pos: Int) = pos.toLong()
     override fun hasStableIds() = true
 }

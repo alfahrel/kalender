@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kalender</string>
+
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_section_calendar">Kalender</string>
+    <string name="settings_section_other">Sonstiges</string>
+    <string name="settings_country">Land</string>
+    <string name="settings_first_day">Erster Wochentag</string>
+    <string name="settings_language">Sprache</string>
+    <string name="settings_privacy">Datenschutzrichtlinie</string>
+    <string name="settings_about">Über die App</string>
+    <string name="settings_version">Version %s</string>
+
+    <string name="picker_country_title">Land auswählen</string>
+    <string name="picker_cancel">Abbrechen</string>
+    <string name="country_indonesia">Indonesien</string>
+    <string name="country_germany">Deutschland</string>
+
+    <string name="picker_language_title">Sprache auswählen</string>
+    <string name="language_english">Englisch</string>
+    <string name="language_indonesian">Indonesisch</string>
+    <string name="language_german">Deutsch</string>
+
+    <string name="no_holiday">Keine nationalen Feiertage in diesem Monat.</string>
+    <string name="prev_month">Vorheriger Monat</string>
+    <string name="next_month">Nächster Monat</string>
+    <string name="back_to_current">Zurück zum aktuellen Monat</string>
+
+    <string name="day_mon">Mo</string>
+    <string name="day_tue">Di</string>
+    <string name="day_wed">Mi</string>
+    <string name="day_thu">Do</string>
+    <string name="day_fri">Fr</string>
+    <string name="day_sat">Sa</string>
+    <string name="day_sun">So</string>
+
+    <string-array name="month_names">
+        <item>Januar</item>
+        <item>Februar</item>
+        <item>März</item>
+        <item>April</item>
+        <item>Mai</item>
+        <item>Juni</item>
+        <item>Juli</item>
+        <item>August</item>
+        <item>September</item>
+        <item>Oktober</item>
+        <item>November</item>
+        <item>Dezember</item>
+    </string-array>
+</resources>

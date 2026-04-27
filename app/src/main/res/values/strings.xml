@@ -1,3 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kalender</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_calendar">Calendar</string>
+    <string name="settings_section_other">Other</string>
+    <string name="settings_country">Country</string>
+    <string name="settings_first_day">First day of week</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_privacy">Privacy policy</string>
+    <string name="settings_about">About app</string>
+    <string name="settings_version">Version %s</string>
+
+    <string name="picker_country_title">Select Country</string>
+    <string name="picker_cancel">Cancel</string>
+    <string name="country_indonesia">Indonesia</string>
+    <string name="country_germany">Germany</string>
+
+    <string name="picker_language_title">Select Language</string>
+    <string name="language_english">English</string>
+    <string name="language_indonesian">Indonesian</string>
+    <string name="language_german">German</string>
+
+    <string name="no_holiday">No national holidays this month.</string>
+    <string name="prev_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="back_to_current">Back to current month</string>
+
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
+
+    <string-array name="month_names">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
 </resources>

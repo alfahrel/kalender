@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <color name="widget_text_primary">#1F1F2E</color>
+    <color name="widget_text_secondary">#6B6B8A</color>
+    <color name="widget_text_sunday">#D03B3B</color>
+    <color name="widget_today_text">#FFFFFF</color>
+    <color name="widget_arrow">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
 </resources>

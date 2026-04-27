@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:padding="12dp">
 
-    <!-- Pill header — background set programmatically via setBackgroundColor -->
     <LinearLayout
         android:id="@+id/widget_header_pill"
         android:layout_width="match_parent"
@@ -26,7 +25,8 @@
             android:src="@drawable/ic_outline_arrow_left_alt_24"
             android:background="@android:color/transparent"
             android:scaleType="centerInside"
-            android:contentDescription="Bulan sebelumnya" />
+            android:tint="@color/widget_arrow"
+            android:contentDescription="@string/prev_month" />
 
         <TextView
             android:id="@+id/widget_tv_month_year"
@@ -35,7 +35,8 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textStyle="bold"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:textColor="@color/widget_text_primary"/>
 
         <ImageButton
             android:id="@+id/widget_btn_next"
@@ -44,11 +45,11 @@
             android:src="@drawable/ic_outline_arrow_right_alt_24"
             android:background="@android:color/transparent"
             android:scaleType="centerInside"
-            android:contentDescription="Bulan berikutnya" />
+            android:tint="@color/widget_arrow"
+            android:contentDescription="@string/next_month" />
 
     </LinearLayout>
 
-    <!-- Rounded card — background set programmatically via setBackgroundColor -->
     <LinearLayout
         android:id="@+id/widget_card_bg"
         android:layout_width="match_parent"
@@ -57,24 +58,22 @@
         android:padding="8dp"
         android:background="@drawable/widget_card_bg">
 
-        <!-- Day labels -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="4dp">
 
-            <TextView android:id="@+id/widget_label_sen" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sen" android:gravity="center" android:textSize="10sp" />
-            <TextView android:id="@+id/widget_label_sel" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sel" android:gravity="center" android:textSize="10sp" />
-            <TextView android:id="@+id/widget_label_rab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Rab" android:gravity="center" android:textSize="10sp" />
-            <TextView android:id="@+id/widget_label_kam" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Kam" android:gravity="center" android:textSize="10sp" />
-            <TextView android:id="@+id/widget_label_jum" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Jum" android:gravity="center" android:textSize="10sp" />
-            <TextView android:id="@+id/widget_label_sab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sab" android:gravity="center" android:textSize="10sp" />
-            <TextView android:id="@+id/widget_label_min" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Min" android:gravity="center" android:textSize="10sp" />
+            <TextView android:id="@+id/widget_label_sen" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_mon" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
+            <TextView android:id="@+id/widget_label_sel" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_tue" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
+            <TextView android:id="@+id/widget_label_rab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_wed" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
+            <TextView android:id="@+id/widget_label_kam" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_thu" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
+            <TextView android:id="@+id/widget_label_jum" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_fri" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
+            <TextView android:id="@+id/widget_label_sab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_sat" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
+            <TextView android:id="@+id/widget_label_min" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_sun" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_sunday" />
 
         </LinearLayout>
 
-        <!-- Grid -->
         <GridView
             android:id="@+id/widget_grid_calendar"
             android:layout_width="match_parent"

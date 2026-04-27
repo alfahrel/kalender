@@ -32,11 +32,29 @@ class CalendarAdapter(private val days: List<CalendarDay>) :
         if (item.day == 0) {
             h.tvDay.text       = ""
             h.tvDay.background = null
+            h.tvDay.alpha      = 1f
             h.dot.visibility   = View.INVISIBLE
             return
         }
 
         h.tvDay.text = item.day.toString()
+
+        if (item.isTrailing) {
+            h.tvDay.background = null
+            h.tvDay.alpha      = 0.35f
+            h.tvDay.setTextColor(
+                when {
+                    item.isHoliday || item.isSunday ->
+                        ctx.resolveAttrColor(R.attr.colorErrorContainer)
+                    else ->
+                        ctx.resolveAttrColor(R.attr.colorOnSurface)
+                }
+            )
+            h.dot.visibility = View.INVISIBLE
+            return
+        }
+
+        h.tvDay.alpha = 1f
 
         when {
             item.isToday -> {
@@ -47,13 +65,11 @@ class CalendarAdapter(private val days: List<CalendarDay>) :
                 h.tvDay.setBackgroundResource(kalender.alfahrel.my.id.R.drawable.bg_joint)
                 h.tvDay.setTextColor(ctx.resolveAttrColor(R.attr.colorOnErrorContainer))
             }
-
             item.isHoliday -> {
                 h.tvDay.setBackgroundResource(kalender.alfahrel.my.id.R.drawable.bg_holiday)
                 h.tvDay.setTextColor(ctx.resolveAttrColor(R.attr.colorOnError))
             }
-
-            item.isSunday -> {
+            item.isSunday || item.isSaturday -> {
                 h.tvDay.setBackgroundResource(kalender.alfahrel.my.id.R.drawable.bg_sunday)
                 h.tvDay.setTextColor(ctx.resolveAttrColor(R.attr.colorOnError))
             }

@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Kalender — Simple android calendar app</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Courier New', monospace;
+      line-height: 1.4;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 2px solid white;
+    }
+
+    h1, h2, h3 {
+      color: gray;
+      border-bottom: 1px dashed white;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+
+    a {
+      text-decoration: none;
+      color: white;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .content {
+      background-color: black;
+      padding: 20px;
+      border: 1px dashed white;
+      margin-bottom: 20px;
+    }
+
+    .content section {
+      margin-bottom: 20px;
+    }
+
+    .screenshots {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .screenshots img {
+      width: 200px;
+      border: 1px solid white;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 0.8em;
+      margin-top: 20px;
+    }
+
+    .badge {
+      display: inline-block;
+      margin: 5px;
+    }
+
+    .updated {
+      font-size: 0.85em;
+      color: gray;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Kalender</h1>
+    <p>Simple android calendar app</p>
+    <div>
+      <a href="https://github.com/alfahrelrifananda/kalender/releases" class="badge">
+        <img src="https://img.shields.io/badge/Get%20it%20on-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="Get it on GitHub">
+      </a>
+    </div>
+  </div>
+
+  <div class="content">
+    <p class="updated">Alpha Release — April 27, 2026</p>
+
+    <section>
+      <h2>// Overview</h2>
+      <p>Kalender is a free, open-source Android app that displays Indonesian national holidays in a clean, Material 3-designed calendar. Currently in alpha, the app is lightweight, privacy-focused, and optimized for performance.</p>
+    </section>
+
+    <section>
+      <h2>// Features</h2>
+      <p>
+        • Monthly calendar with swipe navigation<br>
+        • List of national, religious, and joint holidays<br>
+        • Material 3 design with dynamic color theming<br>
+        • Supports Android 12+ dynamic color (Monet)<br>
+        • Lightweight and optimized for performance
+      </p>
+    </section>
+
+    <div class="screenshots">
+      <img src="./screenshot/screenshot1.png" alt="Screenshot 1">
+      <img src="./screenshot/screenshot2.png" alt="Screenshot 2">
+      <img src="./screenshot/screenshot3.png" alt="Screenshot 3">
+    </div>
+
+    <section>
+      <h2>// Tech Stack</h2>
+      <p>
+        • <strong>Language:</strong> Kotlin<br>
+        • <strong>UI:</strong> XML Layouts<br>
+        • <strong>Design:</strong> Material 3 with Dynamic Colors<br>
+        • <strong>Navigation:</strong> ViewPager2<br>
+        • <strong>Architecture:</strong> Native Android
+      </p>
+    </section>
+
+    <section>
+      <h2>// Current Limitations</h2>
+      <p>
+        • Only available in Indonesian<br>
+        • Holiday data only for the year 2026<br>
+        • Alpha release — features and design may change
+      </p>
+    </section>
+
+    <section>
+      <h2>// Getting Started</h2>
+      <p>
+        <strong>Requirements:</strong> Android Studio (latest stable), Android device or emulator (API 26+)
+      </p>
+      <p>
+        <strong>Installation:</strong><br>
+        1. Clone the repository<br>
+        2. Open in Android Studio<br>
+        3. Build and run
+      </p>
+      <p>
+        <a href="https://github.com/alfahrelrifananda/kalender">View on GitHub</a>
+      </p>
+    </section>
+
+    <section>
+      <h2>// Contributing</h2>
+      <p>
+        Contributions are welcome! Fork the project, open an issue, or submit a pull request.
+      </p>
+    </section>
+
+    <section>
+      <h2>// License</h2>
+      <p>
+        Kalender is licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3.0</a>.
+      </p>
+    </section>
+
+    <section>
+      <h2>// Privacy Policy</h2>
+      <p>
+        Kalender does not collect, store, or transmit any personal data. For details, see the <a href="privacy.html">full privacy policy</a>.
+      </p>
+    </section>
+  </div>
+
+  <div class="footer">
+    <p>© 2026 Alfahrel • Kalender is open source and collects no data.</p>
+  </div>
+</body>
+</html>

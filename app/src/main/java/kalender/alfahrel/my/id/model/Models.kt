@@ -5,9 +5,11 @@ data class CalendarDay(
     val isToday: Boolean,
     val isHoliday: Boolean,
     val isSunday: Boolean,
+    val isSaturday: Boolean,
     val holidayName: String?,
     val holidayDesc: String?,
-    val holidayType: HolidayType? = null
+    val holidayType: HolidayType? = null,
+    val isTrailing: Boolean = false
 )
 
 data class HolidayInfo(

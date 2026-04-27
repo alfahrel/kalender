@@ -21,16 +21,16 @@
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
-        android:text="Pengaturan"
+        android:text="@string/settings_title"
         android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
-    <!-- Section: Kalender -->
+    <!-- Section: Calendar -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="4dp"
-        android:text="Kalender"
+        android:text="@string/settings_section_calendar"
         android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
         android:textColor="?attr/colorPrimary"
         android:textAllCaps="true"
@@ -77,14 +77,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Negara"
+                        android:text="@string/settings_country"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
                     <TextView
                         android:id="@+id/tvCountryValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Indonesia"
                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:textColor="?attr/colorOnSurfaceVariant" />
 
@@ -104,9 +103,15 @@
                 android:layout_marginStart="56dp"
                 android:background="?attr/colorOutlineVariant" />
 
-            <!-- First day of week -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="56dp"
+                android:background="?attr/colorOutlineVariant" />
+
+            <!-- Language -->
             <LinearLayout
-                android:id="@+id/itemFirstDay"
+                android:id="@+id/itemLanguage"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:orientation="horizontal"
@@ -117,7 +122,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_outline_event_busy_24"
+                    android:src="@drawable/ic_baseline_language_24"
                     app:tint="?attr/colorOnSurfaceVariant" />
 
                 <LinearLayout
@@ -130,14 +135,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hari pertama minggu"
+                        android:text="@string/settings_language"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
                     <TextView
-                        android:id="@+id/tvFirstDayValue"
+                        android:id="@+id/tvLanguageValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Senin"
                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:textColor="?attr/colorOnSurfaceVariant" />
 
@@ -154,13 +158,13 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Section: Lainnya -->
+    <!-- Section: Other -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="4dp"
-        android:text="Lainnya"
+        android:text="@string/settings_section_other"
         android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
         android:textColor="?attr/colorPrimary"
         android:textAllCaps="true"
@@ -202,7 +206,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginHorizontal="16dp"
-                    android:text="Kebijakan privasi"
+                    android:text="@string/settings_privacy"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
                 <ImageView
@@ -245,14 +249,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tentang aplikasi"
+                        android:text="@string/settings_about"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
                     <TextView
                         android:id="@+id/tvAppVersion"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Versi 1.0.0"
                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:textColor="?attr/colorOnSurfaceVariant" />
 
