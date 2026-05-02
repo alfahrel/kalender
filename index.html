@@ -2,7 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Kalender — Simple android calendar app</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalender — Simple Android Calendar App</title>
   <style>
     * {
       box-sizing: border-box;
@@ -40,6 +41,12 @@
     .header {
       text-align: center;
       margin-bottom: 20px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
     .content {
@@ -62,8 +69,8 @@
     }
 
     .screenshots img {
-      width: 200px;
-      border: 1px solid white;
+      border: 1px dashed white;
+      max-width: 200px;
     }
 
     .footer {
@@ -77,17 +84,52 @@
       margin: 5px;
     }
 
+    .badge img {
+      height: 20px;
+      vertical-align: middle;
+    }
+
     .updated {
       font-size: 0.85em;
       color: gray;
       margin-bottom: 20px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: white;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1000px) {
+      body {
+        max-width: 98vw;
+        border: none;
+      }
+
+      h1, h2, h3 {
+        border-bottom: 0px dashed white;
+      }
+
+      .content {
+        border: 0px dashed white;
+      }
+
+      .screenshots img {
+        max-width: 48%;
+      }
     }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>Kalender</h1>
-    <p>Simple android calendar app</p>
+    <p>~ simple android calendar app ~</p>
     <div>
       <a href="https://github.com/alfahrelrifananda/kalender/releases" class="badge">
         <img src="https://img.shields.io/badge/Get%20it%20on-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="Get it on GitHub">
@@ -100,7 +142,11 @@
 
     <section>
       <h2>// Overview</h2>
-      <p>Kalender is a free, open-source Android app that displays Indonesian national holidays in a clean, Material 3-designed calendar. Currently in alpha, the app is lightweight, privacy-focused, and optimized for performance.</p>
+      <p>
+        Kalender is a free, open-source Android app that displays Indonesian national holidays
+        in a clean, Material 3-designed calendar. Currently in alpha, the app is lightweight,
+        privacy-focused, and optimized for performance.
+      </p>
     </section>
 
     <section>
@@ -115,9 +161,9 @@
     </section>
 
     <div class="screenshots">
-      <img src="./screenshot/screenshot1.png" alt="Screenshot 1">
-      <img src="./screenshot/screenshot2.png" alt="Screenshot 2">
-      <img src="./screenshot/screenshot3.png" alt="Screenshot 3">
+      <img src="./screenshot/ss1.png" alt="Kalender Screenshot 1">
+      <img src="./screenshot/ss2.png" alt="Kalender Screenshot 2">
+      <img src="./screenshot/ss3.png" alt="Kalender Screenshot 3">
     </div>
 
     <section>
@@ -173,9 +219,12 @@
     <section>
       <h2>// Privacy Policy</h2>
       <p>
-        Kalender does not collect, store, or transmit any personal data. For details, see the <a href="privacy.html">full privacy policy</a>.
+        Kalender does not collect, store, or transmit any personal data.
+        For details, see the <a href="privacy.html">full privacy policy</a>.
       </p>
     </section>
+
+    <a href="https://alfahrel.my.id/" class="back-link">← Back to home</a>
   </div>
 
   <div class="footer">
