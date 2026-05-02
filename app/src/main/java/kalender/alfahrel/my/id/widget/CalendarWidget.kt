@@ -3,6 +3,7 @@ package kalender.alfahrel.my.id.widget
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -13,6 +14,7 @@ import kalender.alfahrel.my.id.MainActivity
 import kalender.alfahrel.my.id.R
 import kalender.alfahrel.my.id.data.AppPreferences
 import kalender.alfahrel.my.id.data.CountryHolidays
+import kalender.alfahrel.my.id.model.HolidayType
 import kalender.alfahrel.my.id.util.LocaleHelper
 import java.util.Calendar
 
@@ -34,6 +36,18 @@ class CalendarWidget : AppWidgetProvider() {
 
     override fun onReceive(ctx: Context, intent: Intent) {
         super.onReceive(ctx, intent)
+
+        when (intent.action) {
+            Intent.ACTION_DATE_CHANGED,
+            Intent.ACTION_TIME_CHANGED,
+            Intent.ACTION_TIMEZONE_CHANGED -> {
+                Log.d(TAG, "onReceive system time action=${intent.action}, refreshing all widgets")
+                val mgr = AppWidgetManager.getInstance(ctx)
+                val ids = mgr.getAppWidgetIds(ComponentName(ctx, CalendarWidget::class.java))
+                ids.forEach { updateWidget(ctx, mgr, it) }
+                return
+            }
+        }
 
         val widgetId = intent.getIntExtra(EXTRA_WIDGET, AppWidgetManager.INVALID_APPWIDGET_ID)
         Log.d(TAG, "onReceive action=${intent.action} widgetId=$widgetId")
@@ -76,7 +90,6 @@ class CalendarWidget : AppWidgetProvider() {
         val monthNames = localizedCtx.resources.getStringArray(R.array.month_names)
         val monthYearText = "${monthNames[month]} $year"
 
-        // Full views update
         val views = RemoteViews(ctx.packageName, R.layout.widget_calendar)
 
         views.setTextViewText(R.id.widget_tv_month_year, monthYearText)
@@ -92,6 +105,14 @@ class CalendarWidget : AppWidgetProvider() {
         views.setOnClickPendingIntent(R.id.widget_btn_prev, buildIntent(ctx, widgetId, ACTION_PREV))
         views.setOnClickPendingIntent(R.id.widget_btn_next, buildIntent(ctx, widgetId, ACTION_NEXT))
 
+        val openApp = PendingIntent.getActivity(
+            ctx,
+            0,
+            Intent(ctx, MainActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        views.setOnClickPendingIntent(R.id.widget_tv_month_year, openApp)
+
         val serviceIntent = Intent(ctx, CalendarWidgetService::class.java).apply {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
             putExtra("year", year)
@@ -100,25 +121,14 @@ class CalendarWidget : AppWidgetProvider() {
         }
 
         views.setRemoteAdapter(R.id.widget_grid_calendar, serviceIntent)
-
-        val openApp = PendingIntent.getActivity(
-            ctx,
-            0,
-            Intent(ctx, MainActivity::class.java),
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
         views.setPendingIntentTemplate(R.id.widget_grid_calendar, openApp)
 
-        // Apply full update first
         mgr.updateAppWidget(widgetId, views)
 
-        // Then partial update ONLY for the month/year text to ensure it always syncs
         val partialViews = RemoteViews(ctx.packageName, R.layout.widget_calendar)
         partialViews.setTextViewText(R.id.widget_tv_month_year, monthYearText)
         mgr.partiallyUpdateAppWidget(widgetId, partialViews)
 
-        // Notify grid last so it doesn't race with the text update
         mgr.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_grid_calendar)
     }
 
@@ -169,6 +179,7 @@ class CalendarFactory(
         val day: Int,
         val isToday: Boolean,
         val isHoliday: Boolean,
+        val isJointLeave: Boolean = false,
         val isSunday: Boolean,
         val isSaturday: Boolean = false,
         val isTrailing: Boolean = false
@@ -179,7 +190,6 @@ class CalendarFactory(
     private var year = intent.getIntExtra("year", Calendar.getInstance().get(Calendar.YEAR))
     private var month = intent.getIntExtra("month", Calendar.getInstance().get(Calendar.MONTH))
 
-    // Read holidays from the saved country preference
     private fun getHolidays() = CountryHolidays.getHolidays(AppPreferences.getCountry(ctx))
 
     private fun refreshYearMonth() {
@@ -214,6 +224,7 @@ class CalendarFactory(
         var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 2
         if (firstDow < 0) firstDow = 6
 
+        // Leading trailing days (prev month)
         if (firstDow > 0) {
             val prevCal = Calendar.getInstance().apply {
                 set(year, month, 1)
@@ -224,29 +235,35 @@ class CalendarFactory(
                 val m = prevCal.get(Calendar.MONTH)
                 val y = prevCal.get(Calendar.YEAR)
                 val dow = prevCal.get(Calendar.DAY_OF_WEEK)
+                val isSaturday = dow == Calendar.SATURDAY
                 val isSunday = dow == Calendar.SUNDAY
                 val key = String.format("%04d-%02d-%02d", y, m + 1, d)
-                val isHol = holidays.containsKey(key)
-                cells.add(CellData(d, false, isHol, isSunday, isTrailing = true))
+                val entry = holidays[key]
+                val isHol = entry != null
+                val isJointLeave = entry?.type == HolidayType.JOINT_LEAVE
+                cells.add(CellData(d, false, isHol, isJointLeave, isSunday, isSaturday, isTrailing = true))
                 prevCal.add(Calendar.DAY_OF_MONTH, 1)
             }
         }
 
+        // Current month days
         val daysInMonth = tmpCal.getActualMaximum(Calendar.DAY_OF_MONTH)
-
         for (day in 1..daysInMonth) {
             tmpCal.set(year, month, day)
             val dow = tmpCal.get(Calendar.DAY_OF_WEEK)
             val isSunday = dow == Calendar.SUNDAY
             val isSaturday = dow == Calendar.SATURDAY
             val key = String.format("%04d-%02d-%02d", year, month + 1, day)
-            val isHol = holidays.containsKey(key)
+            val entry = holidays[key]
+            val isHol = entry != null
+            val isJointLeave = entry?.type == HolidayType.JOINT_LEAVE
             val isToday = year == today.get(Calendar.YEAR)
                     && month == today.get(Calendar.MONTH)
                     && day == today.get(Calendar.DAY_OF_MONTH)
-            cells.add(CellData(day, isToday, isHol, isSunday, isSaturday))
+            cells.add(CellData(day, isToday, isHol, isJointLeave, isSunday, isSaturday))
         }
 
+        // Trailing days (next month)
         val remainder = cells.size % 7
         if (remainder != 0) {
             val nextCal = Calendar.getInstance().apply {
@@ -259,10 +276,13 @@ class CalendarFactory(
                 val m = nextCal.get(Calendar.MONTH)
                 val y = nextCal.get(Calendar.YEAR)
                 val dow = nextCal.get(Calendar.DAY_OF_WEEK)
+                val isSaturday = dow == Calendar.SATURDAY
                 val isSunday = dow == Calendar.SUNDAY
                 val key = String.format("%04d-%02d-%02d", y, m + 1, d)
-                val isHol = holidays.containsKey(key)
-                cells.add(CellData(d, false, isHol, isSunday, isTrailing = true))
+                val entry = holidays[key]
+                val isHol = entry != null
+                val isJointLeave = entry?.type == HolidayType.JOINT_LEAVE
+                cells.add(CellData(d, false, isHol, isJointLeave, isSunday, isSaturday, isTrailing = true))
                 nextCal.add(Calendar.DAY_OF_MONTH, 1)
             }
         }
@@ -281,30 +301,35 @@ class CalendarFactory(
 
         if (cell.isTrailing) {
             val layout = when {
-                cell.isHoliday -> R.layout.widget_day_cell_trailing_holiday
-                cell.isSunday  -> R.layout.widget_day_cell_trailing_sunday
-                else           -> R.layout.widget_day_cell_trailing
+                cell.isJointLeave -> R.layout.widget_day_cell_trailing_joint_leave
+                cell.isHoliday    -> R.layout.widget_day_cell_trailing_holiday
+                cell.isSunday     -> R.layout.widget_day_cell_trailing_sunday
+                cell.isSaturday   -> R.layout.widget_day_cell_trailing_saturday
+                else              -> R.layout.widget_day_cell_trailing
             }
             return RemoteViews(ctx.packageName, layout).also {
                 it.setTextViewText(R.id.widget_tv_day, cell.day.toString())
+                it.setOnClickFillInIntent(R.id.widget_tv_day, Intent())
             }
         }
 
         val layout = when {
-            cell.isToday    -> R.layout.widget_day_cell_today
-            cell.isHoliday  -> R.layout.widget_day_cell_holiday
-            cell.isSunday   -> R.layout.widget_day_cell_sunday
-            cell.isSaturday -> R.layout.widget_day_cell_saturday
-            else            -> R.layout.widget_day_cell_normal
+            cell.isToday      -> R.layout.widget_day_cell_today
+            cell.isJointLeave -> R.layout.widget_day_cell_joint_leave
+            cell.isHoliday    -> R.layout.widget_day_cell_holiday
+            cell.isSunday     -> R.layout.widget_day_cell_sunday
+            cell.isSaturday   -> R.layout.widget_day_cell_saturday
+            else              -> R.layout.widget_day_cell_normal
         }
 
         return RemoteViews(ctx.packageName, layout).also {
             it.setTextViewText(R.id.widget_tv_day, cell.day.toString())
+            it.setOnClickFillInIntent(R.id.widget_tv_day, Intent())
         }
     }
 
     override fun getLoadingView() = null
-    override fun getViewTypeCount() = 7
+    override fun getViewTypeCount() = 10
     override fun getItemId(pos: Int) = pos.toLong()
     override fun hasStableIds() = true
 }
