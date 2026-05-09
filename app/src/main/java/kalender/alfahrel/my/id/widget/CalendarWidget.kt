@@ -303,27 +303,24 @@ class CalendarFactory(
             cells.add(CellData(day, isToday, isHol, isJointLeave, isSunday))
         }
 
-        // Trailing (next month)
-        val remainder = cells.size % 7
-        if (remainder != 0) {
-            val nextCal = Calendar.getInstance().apply {
-                set(year, month, daysInMonth)
-                add(Calendar.DAY_OF_MONTH, 1)
-            }
-            val trailingCount = 7 - remainder
-            for (i in 0 until trailingCount) {
-                val d = nextCal.get(Calendar.DAY_OF_MONTH)
-                val m = nextCal.get(Calendar.MONTH)
-                val y = nextCal.get(Calendar.YEAR)
-                val dow = nextCal.get(Calendar.DAY_OF_WEEK)
-                val isSunday = dow == Calendar.SUNDAY
-                val key = String.format("%04d-%02d-%02d", y, m + 1, d)
-                val entry = holidays[key]
-                val isHol = entry != null
-                val isJointLeave = entry?.type == HolidayType.JOINT_LEAVE
-                cells.add(CellData(d, false, isHol, isJointLeave, isSunday, isTrailing = true))
-                nextCal.add(Calendar.DAY_OF_MONTH, 1)
-            }
+        // Trailing (next month) — enforce exactly 6 rows (42 cells)
+        val targetSize = 42  // 6 rows × 7 columns
+        val nextCal = Calendar.getInstance().apply {
+            set(year, month, daysInMonth)
+            add(Calendar.DAY_OF_MONTH, 1)
+        }
+        while (cells.size < targetSize) {
+            val d = nextCal.get(Calendar.DAY_OF_MONTH)
+            val m = nextCal.get(Calendar.MONTH)
+            val y = nextCal.get(Calendar.YEAR)
+            val dow = nextCal.get(Calendar.DAY_OF_WEEK)
+            val isSunday = dow == Calendar.SUNDAY
+            val key = String.format("%04d-%02d-%02d", y, m + 1, d)
+            val entry = holidays[key]
+            val isHol = entry != null
+            val isJointLeave = entry?.type == HolidayType.JOINT_LEAVE
+            cells.add(CellData(d, false, isHol, isJointLeave, isSunday, isTrailing = true))
+            nextCal.add(Calendar.DAY_OF_MONTH, 1)
         }
 
         Log.d("CalendarWidget", "load complete size=${cells.size}")

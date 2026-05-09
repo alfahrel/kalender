@@ -1,13 +1,10 @@
 package kalender.alfahrel.my.id.adapter
 
 import android.animation.ValueAnimator
-import android.content.Context
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +20,7 @@ class HolidayAdapter(private val holidays: List<HolidayInfo>) :
         val tvDate: TextView              = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayDate)
         val tvName: TextView              = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayName)
         val tvDesc: TextView              = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayDesc)
-        val ivChevron: ImageView          = view.findViewById(kalender.alfahrel.my.id.R.id.ivChevron)
+        val tvEllipsis: TextView          = view.findViewById(kalender.alfahrel.my.id.R.id.ivChevron)
         val layoutExpanded: LinearLayout  = view.findViewById(kalender.alfahrel.my.id.R.id.layoutExpanded)
         val layoutCollapsed: LinearLayout = view.findViewById(kalender.alfahrel.my.id.R.id.layoutCollapsed)
     }
@@ -48,7 +45,8 @@ class HolidayAdapter(private val holidays: List<HolidayInfo>) :
         val isExpanded = position in expandedPositions
         h.layoutExpanded.visibility = if (isExpanded) View.VISIBLE else View.GONE
         h.layoutExpanded.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        h.ivChevron.rotation = if (isExpanded) 270f else 90f
+        // Hide ellipsis when already expanded, show when collapsed
+        h.tvEllipsis.alpha = if (isExpanded) 0f else 1f
 
         h.layoutCollapsed.setOnClickListener {
             val pos = h.bindingAdapterPosition
@@ -56,10 +54,10 @@ class HolidayAdapter(private val holidays: List<HolidayInfo>) :
 
             if (pos in expandedPositions) {
                 expandedPositions.remove(pos)
-                collapseView(h.layoutExpanded, h.ivChevron)
+                collapseView(h.layoutExpanded, h.tvEllipsis)
             } else {
                 expandedPositions.add(pos)
-                expandView(h.layoutExpanded, h.ivChevron)
+                expandView(h.layoutExpanded, h.tvEllipsis)
             }
         }
 
@@ -74,7 +72,7 @@ class HolidayAdapter(private val holidays: List<HolidayInfo>) :
             .start()
     }
 
-    private fun expandView(target: LinearLayout, chevron: ImageView) {
+    private fun expandView(target: LinearLayout, ellipsis: TextView) {
         target.measure(
             View.MeasureSpec.makeMeasureSpec(
                 (target.parent as View).width,
@@ -105,11 +103,11 @@ class HolidayAdapter(private val holidays: List<HolidayInfo>) :
             start()
         }
 
-        chevron.animate().rotation(270f).setDuration(250)
-            .setInterpolator(interpolator).start()
+        // Fade out ellipsis when expanded
+        ellipsis.animate().alpha(0f).setDuration(250).setInterpolator(interpolator).start()
     }
 
-    private fun collapseView(target: LinearLayout, chevron: ImageView) {
+    private fun collapseView(target: LinearLayout, ellipsis: TextView) {
         val initialHeight = target.measuredHeight
 
         ValueAnimator.ofInt(initialHeight, 0).apply {
@@ -131,8 +129,8 @@ class HolidayAdapter(private val holidays: List<HolidayInfo>) :
             start()
         }
 
-        chevron.animate().rotation(90f).setDuration(250)
-            .setInterpolator(interpolator).start()
+        // Fade in ellipsis when collapsed
+        ellipsis.animate().alpha(1f).setDuration(250).setInterpolator(interpolator).start()
     }
 
     override fun onViewRecycled(h: HolidayVH) {

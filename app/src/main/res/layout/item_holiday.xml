@@ -45,14 +45,16 @@
                 android:maxLines="1"
                 android:ellipsize="end" />
 
-            <ImageView
+            <!-- Ellipsis indicator replacing the chevron -->
+            <TextView
                 android:id="@+id/ivChevron"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:src="@drawable/ic_outline_arrow_right_alt_24"
-                app:tint="?attr/colorOnSurfaceVariant"
-                android:rotation="90" />
+                android:text="···"
+                android:textSize="16sp"
+                android:letterSpacing="0.15"
+                android:textColor="?attr/colorOnSurfaceVariant" />
 
         </LinearLayout>
 
