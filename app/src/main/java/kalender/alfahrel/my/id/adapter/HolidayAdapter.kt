@@ -1,38 +1,43 @@
 package kalender.alfahrel.my.id.adapter
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.R
 import kalender.alfahrel.my.id.model.HolidayInfo
-import kalender.alfahrel.my.id.model.HolidayType
 
 class HolidayAdapter(private val holidays: List<HolidayInfo>) :
     RecyclerView.Adapter<HolidayAdapter.HolidayVH>() {
 
     private val interpolator = DecelerateInterpolator()
+    private val expandedPositions = mutableSetOf<Int>()
 
     inner class HolidayVH(view: View) : RecyclerView.ViewHolder(view) {
-        val tvDate: TextView = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayDate)
-        val tvName: TextView = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayName)
-        val tvDesc: TextView = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayDesc)
-        val chip: TextView   = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayChip)
+        val tvDate: TextView              = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayDate)
+        val tvName: TextView              = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayName)
+        val tvDesc: TextView              = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayDesc)
+        val ivChevron: ImageView          = view.findViewById(kalender.alfahrel.my.id.R.id.ivChevron)
+        val layoutExpanded: LinearLayout  = view.findViewById(kalender.alfahrel.my.id.R.id.layoutExpanded)
+        val layoutCollapsed: LinearLayout = view.findViewById(kalender.alfahrel.my.id.R.id.layoutCollapsed)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        HolidayVH(LayoutInflater.from(parent.context)
-            .inflate(kalender.alfahrel.my.id.R.layout.item_holiday, parent, false))
+        HolidayVH(
+            LayoutInflater.from(parent.context)
+                .inflate(kalender.alfahrel.my.id.R.layout.item_holiday, parent, false)
+        )
 
     override fun getItemCount() = holidays.size
 
     override fun onBindViewHolder(h: HolidayVH, position: Int) {
         val item = holidays[position]
-        val ctx  = h.itemView.context
 
         val monthNames = listOf("","Jan","Feb","Mar","Apr","Mei","Jun",
             "Jul","Agu","Sep","Okt","Nov","Des")
@@ -40,18 +45,21 @@ class HolidayAdapter(private val holidays: List<HolidayInfo>) :
         h.tvName.text = item.name
         h.tvDesc.text = item.description
 
-        when (item.type) {
-            HolidayType.NATIONAL -> {
-                h.chip.text = "Nasional"
-                h.chip.setTextColor(ctx.resolveAttrColor(R.attr.colorOnError))
-            }
-            HolidayType.RELIGIOUS -> {
-                h.chip.text = "Keagamaan"
-                h.chip.setTextColor(ctx.resolveAttrColor(R.attr.colorOnError))
-            }
-            HolidayType.JOINT_LEAVE -> {
-                h.chip.text = "Cuti Bersama"
-                h.chip.setTextColor(ctx.resolveAttrColor(R.attr.colorOnError))
+        val isExpanded = position in expandedPositions
+        h.layoutExpanded.visibility = if (isExpanded) View.VISIBLE else View.GONE
+        h.layoutExpanded.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        h.ivChevron.rotation = if (isExpanded) 270f else 90f
+
+        h.layoutCollapsed.setOnClickListener {
+            val pos = h.bindingAdapterPosition
+            if (pos == RecyclerView.NO_ID.toInt()) return@setOnClickListener
+
+            if (pos in expandedPositions) {
+                expandedPositions.remove(pos)
+                collapseView(h.layoutExpanded, h.ivChevron)
+            } else {
+                expandedPositions.add(pos)
+                expandView(h.layoutExpanded, h.ivChevron)
             }
         }
 
@@ -66,16 +74,71 @@ class HolidayAdapter(private val holidays: List<HolidayInfo>) :
             .start()
     }
 
+    private fun expandView(target: LinearLayout, chevron: ImageView) {
+        target.measure(
+            View.MeasureSpec.makeMeasureSpec(
+                (target.parent as View).width,
+                View.MeasureSpec.EXACTLY
+            ),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        val targetHeight = target.measuredHeight
+
+        target.layoutParams.height = 0
+        target.visibility = View.VISIBLE
+
+        ValueAnimator.ofInt(0, targetHeight).apply {
+            duration = 250
+            interpolator = this@HolidayAdapter.interpolator
+            addUpdateListener {
+                target.layoutParams.height = it.animatedValue as Int
+                target.requestLayout()
+            }
+            addListener(object : android.animation.Animator.AnimatorListener {
+                override fun onAnimationEnd(animation: android.animation.Animator) {
+                    target.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+                override fun onAnimationStart(animation: android.animation.Animator) {}
+                override fun onAnimationCancel(animation: android.animation.Animator) {}
+                override fun onAnimationRepeat(animation: android.animation.Animator) {}
+            })
+            start()
+        }
+
+        chevron.animate().rotation(270f).setDuration(250)
+            .setInterpolator(interpolator).start()
+    }
+
+    private fun collapseView(target: LinearLayout, chevron: ImageView) {
+        val initialHeight = target.measuredHeight
+
+        ValueAnimator.ofInt(initialHeight, 0).apply {
+            duration = 250
+            interpolator = this@HolidayAdapter.interpolator
+            addUpdateListener {
+                target.layoutParams.height = it.animatedValue as Int
+                target.requestLayout()
+            }
+            addListener(object : android.animation.Animator.AnimatorListener {
+                override fun onAnimationEnd(animation: android.animation.Animator) {
+                    target.visibility = View.GONE
+                    target.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+                override fun onAnimationStart(animation: android.animation.Animator) {}
+                override fun onAnimationCancel(animation: android.animation.Animator) {}
+                override fun onAnimationRepeat(animation: android.animation.Animator) {}
+            })
+            start()
+        }
+
+        chevron.animate().rotation(90f).setDuration(250)
+            .setInterpolator(interpolator).start()
+    }
+
     override fun onViewRecycled(h: HolidayVH) {
         super.onViewRecycled(h)
         h.itemView.animate().cancel()
         h.itemView.alpha = 1f
         h.itemView.translationY = 0f
     }
-}
-
-private fun Context.resolveAttrColor(attr: Int): Int {
-    val tv = TypedValue()
-    theme.resolveAttribute(attr, tv, true)
-    return tv.data
 }

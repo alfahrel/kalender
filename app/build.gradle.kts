@@ -13,8 +13,8 @@ android {
         applicationId = "kalender.alfahrel.my.id"
         minSdk = 24
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.3-alpha"
+        versionCode = 4
+        versionName = "1.4-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)

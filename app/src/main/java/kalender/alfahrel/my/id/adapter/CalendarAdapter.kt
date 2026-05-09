@@ -69,7 +69,7 @@ class CalendarAdapter(private val days: List<CalendarDay>) :
                 h.tvDay.setBackgroundResource(kalender.alfahrel.my.id.R.drawable.bg_holiday)
                 h.tvDay.setTextColor(ctx.resolveAttrColor(R.attr.colorOnError))
             }
-            item.isSunday || item.isSaturday -> {
+            item.isSunday -> {
                 h.tvDay.setBackgroundResource(kalender.alfahrel.my.id.R.drawable.bg_sunday)
                 h.tvDay.setTextColor(ctx.resolveAttrColor(R.attr.colorOnError))
             }

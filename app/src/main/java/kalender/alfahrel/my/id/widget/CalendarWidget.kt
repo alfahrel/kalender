@@ -1,5 +1,6 @@
 package kalender.alfahrel.my.id.widget
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -24,7 +25,43 @@ class CalendarWidget : AppWidgetProvider() {
         const val TAG = "CalendarWidget"
         const val ACTION_PREV = "kalender.alfahrel.my.id.WIDGET_PREV"
         const val ACTION_NEXT = "kalender.alfahrel.my.id.WIDGET_NEXT"
+        const val ACTION_MIDNIGHT_UPDATE = "kalender.alfahrel.my.id.WIDGET_MIDNIGHT_UPDATE"
         const val EXTRA_WIDGET = "widget_id"
+        private const val MIDNIGHT_ALARM_REQUEST_CODE = 999
+
+        fun scheduleMidnightAlarm(ctx: Context) {
+            val alarmManager = ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+            val midnight = Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_MONTH, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 5)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            val intent = Intent(ctx, CalendarWidget::class.java).apply {
+                action = ACTION_MIDNIGHT_UPDATE
+            }
+            val pi = PendingIntent.getBroadcast(
+                ctx,
+                MIDNIGHT_ALARM_REQUEST_CODE,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            try {
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC,
+                    midnight.timeInMillis,
+                    pi
+                )
+                Log.d(TAG, "Midnight alarm scheduled for ${midnight.time}")
+            } catch (e: SecurityException) {
+                alarmManager.set(AlarmManager.RTC, midnight.timeInMillis, pi)
+                Log.w(TAG, "Exact alarm not permitted, falling back to inexact: ${e.message}")
+            }
+        }
     }
 
     override fun onUpdate(ctx: Context, mgr: AppWidgetManager, ids: IntArray) {
@@ -32,6 +69,7 @@ class CalendarWidget : AppWidgetProvider() {
             Log.d(TAG, "onUpdate widgetId=$it")
             updateWidget(ctx, mgr, it)
         }
+        scheduleMidnightAlarm(ctx)
     }
 
     override fun onReceive(ctx: Context, intent: Intent) {
@@ -40,11 +78,13 @@ class CalendarWidget : AppWidgetProvider() {
         when (intent.action) {
             Intent.ACTION_DATE_CHANGED,
             Intent.ACTION_TIME_CHANGED,
-            Intent.ACTION_TIMEZONE_CHANGED -> {
-                Log.d(TAG, "onReceive system time action=${intent.action}, refreshing all widgets")
+            Intent.ACTION_TIMEZONE_CHANGED,
+            ACTION_MIDNIGHT_UPDATE -> {
+                Log.d(TAG, "onReceive system/midnight action=${intent.action}, refreshing all widgets")
                 val mgr = AppWidgetManager.getInstance(ctx)
                 val ids = mgr.getAppWidgetIds(ComponentName(ctx, CalendarWidget::class.java))
                 ids.forEach { updateWidget(ctx, mgr, it) }
+                scheduleMidnightAlarm(ctx)
                 return
             }
         }
@@ -85,7 +125,10 @@ class CalendarWidget : AppWidgetProvider() {
         val year = cal.get(Calendar.YEAR)
         val month = cal.get(Calendar.MONTH)
 
-        Log.d(TAG, "updateWidget widgetId=$widgetId year=$year month=$month offset=$offset")
+        val today = Calendar.getInstance()
+        val todayStr = "${today.get(Calendar.YEAR)}-${today.get(Calendar.MONTH)}-${today.get(Calendar.DAY_OF_MONTH)}"
+
+        Log.d(TAG, "updateWidget widgetId=$widgetId year=$year month=$month offset=$offset today=$todayStr")
 
         val monthNames = localizedCtx.resources.getStringArray(R.array.month_names)
         val monthYearText = "${monthNames[month]} $year"
@@ -117,7 +160,7 @@ class CalendarWidget : AppWidgetProvider() {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
             putExtra("year", year)
             putExtra("month", month)
-            data = Uri.parse("widget://$widgetId/$year/$month")
+            data = Uri.parse("widget://$widgetId/$year/$month/$todayStr")
         }
 
         views.setRemoteAdapter(R.id.widget_grid_calendar, serviceIntent)
@@ -181,7 +224,6 @@ class CalendarFactory(
         val isHoliday: Boolean,
         val isJointLeave: Boolean = false,
         val isSunday: Boolean,
-        val isSaturday: Boolean = false,
         val isTrailing: Boolean = false
     )
 
@@ -224,7 +266,7 @@ class CalendarFactory(
         var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 2
         if (firstDow < 0) firstDow = 6
 
-        // Leading trailing days (prev month)
+        // Leading (prev month)
         if (firstDow > 0) {
             val prevCal = Calendar.getInstance().apply {
                 set(year, month, 1)
@@ -235,13 +277,12 @@ class CalendarFactory(
                 val m = prevCal.get(Calendar.MONTH)
                 val y = prevCal.get(Calendar.YEAR)
                 val dow = prevCal.get(Calendar.DAY_OF_WEEK)
-                val isSaturday = dow == Calendar.SATURDAY
                 val isSunday = dow == Calendar.SUNDAY
                 val key = String.format("%04d-%02d-%02d", y, m + 1, d)
                 val entry = holidays[key]
                 val isHol = entry != null
                 val isJointLeave = entry?.type == HolidayType.JOINT_LEAVE
-                cells.add(CellData(d, false, isHol, isJointLeave, isSunday, isSaturday, isTrailing = true))
+                cells.add(CellData(d, false, isHol, isJointLeave, isSunday, isTrailing = true))
                 prevCal.add(Calendar.DAY_OF_MONTH, 1)
             }
         }
@@ -252,7 +293,6 @@ class CalendarFactory(
             tmpCal.set(year, month, day)
             val dow = tmpCal.get(Calendar.DAY_OF_WEEK)
             val isSunday = dow == Calendar.SUNDAY
-            val isSaturday = dow == Calendar.SATURDAY
             val key = String.format("%04d-%02d-%02d", year, month + 1, day)
             val entry = holidays[key]
             val isHol = entry != null
@@ -260,10 +300,10 @@ class CalendarFactory(
             val isToday = year == today.get(Calendar.YEAR)
                     && month == today.get(Calendar.MONTH)
                     && day == today.get(Calendar.DAY_OF_MONTH)
-            cells.add(CellData(day, isToday, isHol, isJointLeave, isSunday, isSaturday))
+            cells.add(CellData(day, isToday, isHol, isJointLeave, isSunday))
         }
 
-        // Trailing days (next month)
+        // Trailing (next month)
         val remainder = cells.size % 7
         if (remainder != 0) {
             val nextCal = Calendar.getInstance().apply {
@@ -276,13 +316,12 @@ class CalendarFactory(
                 val m = nextCal.get(Calendar.MONTH)
                 val y = nextCal.get(Calendar.YEAR)
                 val dow = nextCal.get(Calendar.DAY_OF_WEEK)
-                val isSaturday = dow == Calendar.SATURDAY
                 val isSunday = dow == Calendar.SUNDAY
                 val key = String.format("%04d-%02d-%02d", y, m + 1, d)
                 val entry = holidays[key]
                 val isHol = entry != null
                 val isJointLeave = entry?.type == HolidayType.JOINT_LEAVE
-                cells.add(CellData(d, false, isHol, isJointLeave, isSunday, isSaturday, isTrailing = true))
+                cells.add(CellData(d, false, isHol, isJointLeave, isSunday, isTrailing = true))
                 nextCal.add(Calendar.DAY_OF_MONTH, 1)
             }
         }
@@ -304,7 +343,6 @@ class CalendarFactory(
                 cell.isJointLeave -> R.layout.widget_day_cell_trailing_joint_leave
                 cell.isHoliday    -> R.layout.widget_day_cell_trailing_holiday
                 cell.isSunday     -> R.layout.widget_day_cell_trailing_sunday
-                cell.isSaturday   -> R.layout.widget_day_cell_trailing_saturday
                 else              -> R.layout.widget_day_cell_trailing
             }
             return RemoteViews(ctx.packageName, layout).also {
@@ -318,7 +356,6 @@ class CalendarFactory(
             cell.isJointLeave -> R.layout.widget_day_cell_joint_leave
             cell.isHoliday    -> R.layout.widget_day_cell_holiday
             cell.isSunday     -> R.layout.widget_day_cell_sunday
-            cell.isSaturday   -> R.layout.widget_day_cell_saturday
             else              -> R.layout.widget_day_cell_normal
         }
 
@@ -329,7 +366,7 @@ class CalendarFactory(
     }
 
     override fun getLoadingView() = null
-    override fun getViewTypeCount() = 10
+    override fun getViewTypeCount() = 8
     override fun getItemId(pos: Int) = pos.toLong()
     override fun hasStableIds() = true
 }

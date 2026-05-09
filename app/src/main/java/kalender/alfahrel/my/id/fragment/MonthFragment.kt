@@ -33,16 +33,24 @@ class MonthFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadCalendar()
+    }
 
+    fun refreshToday() {
+        loadCalendar()
+    }
+
+    private fun loadCalendar() {
         val position = arguments?.getInt(ARG_POSITION) ?: MainActivity.START_POSITION
         val cal = (requireActivity() as MainActivity).pageToCalendar(position)
         val year = cal.get(Calendar.YEAR)
         val month = cal.get(Calendar.MONTH)
 
-        val rvCalendar = view.findViewById<RecyclerView>(R.id.rvCalendar)
-        rvCalendar.layoutManager = GridLayoutManager(requireContext(), 7)
-        rvCalendar.itemAnimator = null
-        rvCalendar.adapter = CalendarAdapter(buildDayList(year, month))
+        view?.findViewById<RecyclerView>(R.id.rvCalendar)?.also {
+            it.layoutManager = GridLayoutManager(requireContext(), 7)
+            it.itemAnimator = null
+            it.adapter = CalendarAdapter(buildDayList(year, month))
+        }
     }
 
     private fun getHolidays() =
@@ -54,7 +62,7 @@ class MonthFragment : Fragment() {
         val tmpCal = Calendar.getInstance().apply { set(year, month, 1) }
         val today = Calendar.getInstance()
 
-        // Leading trailing (prev month)
+        // Leading (prev month)
         var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 2
         if (firstDow < 0) firstDow = 6
 
@@ -69,7 +77,7 @@ class MonthFragment : Fragment() {
             val dow = prevCal.get(Calendar.DAY_OF_WEEK)
             val key = String.format("%04d-%02d-%02d", y, m + 1, d)
             val entry = holidays[key]
-            days.add(CalendarDay(d, false, entry != null, dow == Calendar.SUNDAY, false, entry?.name, entry?.description, entry?.type, isTrailing = true))
+            days.add(CalendarDay(d, false, entry != null, dow == Calendar.SUNDAY, entry?.name, entry?.description, entry?.type, isTrailing = true))
             prevCal.add(Calendar.DAY_OF_MONTH, 1)
         }
 
@@ -83,7 +91,7 @@ class MonthFragment : Fragment() {
             val isToday = year == today.get(Calendar.YEAR)
                     && month == today.get(Calendar.MONTH)
                     && day == today.get(Calendar.DAY_OF_MONTH)
-            days.add(CalendarDay(day, isToday, entry != null, dow == Calendar.SUNDAY, dow == Calendar.SATURDAY, entry?.name, entry?.description, entry?.type))
+            days.add(CalendarDay(day, isToday, entry != null, dow == Calendar.SUNDAY, entry?.name, entry?.description, entry?.type))
         }
 
         // Trailing (next month)
@@ -100,7 +108,7 @@ class MonthFragment : Fragment() {
                 val dow = nextCal.get(Calendar.DAY_OF_WEEK)
                 val key = String.format("%04d-%02d-%02d", y, m + 1, d)
                 val entry = holidays[key]
-                days.add(CalendarDay(d, false, entry != null, dow == Calendar.SUNDAY, false, entry?.name, entry?.description, entry?.type, isTrailing = true))
+                days.add(CalendarDay(d, false, entry != null, dow == Calendar.SUNDAY, entry?.name, entry?.description, entry?.type, isTrailing = true))
                 nextCal.add(Calendar.DAY_OF_MONTH, 1)
             }
         }

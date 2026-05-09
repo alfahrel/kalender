@@ -1,7 +1,10 @@
 package kalender.alfahrel.my.id
 
 import android.appwidget.AppWidgetManager
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
@@ -27,7 +30,9 @@ import kalender.alfahrel.my.id.data.AppLanguage
 import kalender.alfahrel.my.id.data.AppPreferences
 import kalender.alfahrel.my.id.data.Country
 import kalender.alfahrel.my.id.data.CountryHolidays
+import kalender.alfahrel.my.id.fragment.MonthFragment
 import kalender.alfahrel.my.id.model.HolidayInfo
+import kalender.alfahrel.my.id.utils.MidnightWorker
 import java.util.Calendar
 
 class MainActivity : BaseActivity() {
@@ -46,6 +51,22 @@ class MainActivity : BaseActivity() {
 
     companion object {
         const val START_POSITION = 1200
+    }
+
+    private val dateChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == MidnightWorker.ACTION_DATE_CHANGED) {
+                // Refresh all visible MonthFragments
+                supportFragmentManager.fragments.forEach { fragment ->
+                    if (fragment is MonthFragment) {
+                        fragment.refreshToday()
+                    }
+                }
+                // Also refresh the holiday list below
+                val cal = pageToCalendar(viewPager.currentItem)
+                updateHolidays(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH))
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,6 +134,23 @@ class MainActivity : BaseActivity() {
         btnPrev.setOnClickListener { viewPager.setCurrentItem(viewPager.currentItem - 1, true) }
         btnNext.setOnClickListener { viewPager.setCurrentItem(viewPager.currentItem + 1, true) }
         fabCurrentMonth.setOnClickListener { viewPager.setCurrentItem(START_POSITION, true) }
+
+        // Schedule midnight refresh
+        MidnightWorker.scheduleMidnightWork(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        registerReceiver(
+            dateChangeReceiver,
+            IntentFilter(MidnightWorker.ACTION_DATE_CHANGED),
+            Context.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(dateChangeReceiver)
     }
 
     fun pageToCalendar(position: Int): Calendar {
