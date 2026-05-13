@@ -1,4 +1,4 @@
-package kalender.alfahrel.my.id.adapter
+package alfahrel.my.id.kalender.adapter
 
 import android.animation.ValueAnimator
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kalender.alfahrel.my.id.model.HolidayInfo
+import alfahrel.my.id.kalender.model.HolidayInfo
 
 class HolidayAdapter(private val holidays: List<HolidayInfo>) :
     RecyclerView.Adapter<HolidayAdapter.HolidayVH>() {
@@ -17,18 +17,18 @@ class HolidayAdapter(private val holidays: List<HolidayInfo>) :
     private val expandedPositions = mutableSetOf<Int>()
 
     inner class HolidayVH(view: View) : RecyclerView.ViewHolder(view) {
-        val tvDate: TextView              = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayDate)
-        val tvName: TextView              = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayName)
-        val tvDesc: TextView              = view.findViewById(kalender.alfahrel.my.id.R.id.tvHolidayDesc)
-        val tvEllipsis: TextView          = view.findViewById(kalender.alfahrel.my.id.R.id.ivChevron)
-        val layoutExpanded: LinearLayout  = view.findViewById(kalender.alfahrel.my.id.R.id.layoutExpanded)
-        val layoutCollapsed: LinearLayout = view.findViewById(kalender.alfahrel.my.id.R.id.layoutCollapsed)
+        val tvDate: TextView              = view.findViewById(alfahrel.my.id.kalender.R.id.tvHolidayDate)
+        val tvName: TextView              = view.findViewById(alfahrel.my.id.kalender.R.id.tvHolidayName)
+        val tvDesc: TextView              = view.findViewById(alfahrel.my.id.kalender.R.id.tvHolidayDesc)
+        val tvEllipsis: TextView          = view.findViewById(alfahrel.my.id.kalender.R.id.ivChevron)
+        val layoutExpanded: LinearLayout  = view.findViewById(alfahrel.my.id.kalender.R.id.layoutExpanded)
+        val layoutCollapsed: LinearLayout = view.findViewById(alfahrel.my.id.kalender.R.id.layoutCollapsed)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         HolidayVH(
             LayoutInflater.from(parent.context)
-                .inflate(kalender.alfahrel.my.id.R.layout.item_holiday, parent, false)
+                .inflate(alfahrel.my.id.kalender.R.layout.item_holiday, parent, false)
         )
 
     override fun getItemCount() = holidays.size

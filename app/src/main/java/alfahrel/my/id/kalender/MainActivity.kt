@@ -1,4 +1,4 @@
-package kalender.alfahrel.my.id
+package alfahrel.my.id.kalender
 
 import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
@@ -24,15 +24,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kalender.alfahrel.my.id.adapter.HolidayAdapter
-import kalender.alfahrel.my.id.adapter.MonthPagerAdapter
-import kalender.alfahrel.my.id.data.AppLanguage
-import kalender.alfahrel.my.id.data.AppPreferences
-import kalender.alfahrel.my.id.data.Country
-import kalender.alfahrel.my.id.data.CountryHolidays
-import kalender.alfahrel.my.id.fragment.MonthFragment
-import kalender.alfahrel.my.id.model.HolidayInfo
-import kalender.alfahrel.my.id.utils.MidnightWorker
+import alfahrel.my.id.kalender.adapter.HolidayAdapter
+import alfahrel.my.id.kalender.adapter.MonthPagerAdapter
+import alfahrel.my.id.kalender.data.AppLanguage
+import alfahrel.my.id.kalender.data.AppPreferences
+import alfahrel.my.id.kalender.data.Country
+import alfahrel.my.id.kalender.data.CountryHolidays
+import alfahrel.my.id.kalender.fragment.MonthFragment
+import alfahrel.my.id.kalender.model.HolidayInfo
+import alfahrel.my.id.kalender.utils.MidnightWorker
 import java.util.Calendar
 
 class MainActivity : BaseActivity() {
@@ -56,13 +56,11 @@ class MainActivity : BaseActivity() {
     private val dateChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == MidnightWorker.ACTION_DATE_CHANGED) {
-                // Refresh all visible MonthFragments
                 supportFragmentManager.fragments.forEach { fragment ->
                     if (fragment is MonthFragment) {
                         fragment.refreshToday()
                     }
                 }
-                // Also refresh the holiday list below
                 val cal = pageToCalendar(viewPager.currentItem)
                 updateHolidays(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH))
             }
@@ -196,10 +194,10 @@ class MainActivity : BaseActivity() {
     private fun refreshWidgets() {
         val mgr = AppWidgetManager.getInstance(this)
         val ids = mgr.getAppWidgetIds(
-            android.content.ComponentName(this, kalender.alfahrel.my.id.widget.CalendarWidget::class.java)
+            android.content.ComponentName(this, alfahrel.my.id.kalender.widget.CalendarWidget::class.java)
         )
         if (ids.isNotEmpty()) {
-            val intent = Intent(this, kalender.alfahrel.my.id.widget.CalendarWidget::class.java).apply {
+            val intent = Intent(this, alfahrel.my.id.kalender.widget.CalendarWidget::class.java).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
             }
@@ -255,7 +253,7 @@ class MainActivity : BaseActivity() {
         }
 
         view.findViewById<LinearLayout>(R.id.itemPrivacy).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://kalender.alfahrel.my.id/privacy.html")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://alfahrel.my.id.kalender/privacy.html")))
         }
 
         view.findViewById<LinearLayout>(R.id.itemAbout).setOnClickListener {

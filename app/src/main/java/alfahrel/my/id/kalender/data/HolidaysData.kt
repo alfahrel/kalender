@@ -1,7 +1,7 @@
-package kalender.alfahrel.my.id.data
+package alfahrel.my.id.kalender.data
 
-import kalender.alfahrel.my.id.model.HolidayEntry
-import kalender.alfahrel.my.id.model.HolidayType
+import alfahrel.my.id.kalender.model.HolidayEntry
+import alfahrel.my.id.kalender.model.HolidayType
 
 object HolidaysData {
     val allHolidays: Map<String, HolidayEntry> = mapOf(

@@ -1,4 +1,4 @@
-package kalender.alfahrel.my.id.util
+package alfahrel.my.id.kalender.util
 
 import android.content.Context
 import android.os.Build

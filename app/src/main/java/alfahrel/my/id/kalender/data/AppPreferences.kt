@@ -1,4 +1,4 @@
-package kalender.alfahrel.my.id.data
+package alfahrel.my.id.kalender.data
 
 import android.content.Context
 

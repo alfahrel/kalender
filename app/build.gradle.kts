@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "kalender.alfahrel.my.id"
+    namespace = "alfahrel.my.id.kalender"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "kalender.alfahrel.my.id"
+        applicationId = "alfahrel.my.id.kalender"
         minSdk = 24
         targetSdk = 36
         versionCode = 4

@@ -1,9 +1,9 @@
-package kalender.alfahrel.my.id.data
+package alfahrel.my.id.kalender.data
 
-import kalender.alfahrel.my.id.model.HolidayEntry
+import alfahrel.my.id.kalender.model.HolidayEntry
 
 import androidx.annotation.StringRes
-import kalender.alfahrel.my.id.R
+import alfahrel.my.id.kalender.R
 
 enum class Country(
     @StringRes val displayNameRes: Int

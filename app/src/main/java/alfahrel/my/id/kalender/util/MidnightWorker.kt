@@ -1,4 +1,4 @@
-package kalender.alfahrel.my.id.utils
+package alfahrel.my.id.kalender.utils
 
 import android.content.Context
 import androidx.work.ExistingWorkPolicy
@@ -24,7 +24,7 @@ class MidnightWorker(context: Context, params: WorkerParameters) : Worker(contex
     }
 
     companion object {
-        const val ACTION_DATE_CHANGED = "kalender.alfahrel.my.id.DATE_CHANGED"
+        const val ACTION_DATE_CHANGED = "alfahrel.my.id.kalender.DATE_CHANGED"
         private const val WORK_NAME = "midnight_refresh"
 
         fun scheduleMidnightWork(context: Context) {

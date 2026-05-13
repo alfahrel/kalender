@@ -1,4 +1,4 @@
-package kalender.alfahrel.my.id
+package alfahrel.my.id.kalender
 
 import org.junit.Test
 

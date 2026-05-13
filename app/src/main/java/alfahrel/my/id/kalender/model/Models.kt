@@ -1,4 +1,4 @@
-package kalender.alfahrel.my.id.model
+package alfahrel.my.id.kalender.model
 
 data class CalendarDay(
     val day: Int,

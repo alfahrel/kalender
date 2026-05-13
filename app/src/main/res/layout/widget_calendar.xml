@@ -64,13 +64,13 @@
             android:orientation="horizontal"
             android:paddingBottom="4dp">
 
+            <TextView android:id="@+id/widget_label_min" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_sun" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
             <TextView android:id="@+id/widget_label_sen" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_mon" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
             <TextView android:id="@+id/widget_label_sel" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_tue" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
             <TextView android:id="@+id/widget_label_rab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_wed" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
             <TextView android:id="@+id/widget_label_kam" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_thu" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
             <TextView android:id="@+id/widget_label_jum" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_fri" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
             <TextView android:id="@+id/widget_label_sab" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_sat" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
-            <TextView android:id="@+id/widget_label_min" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/day_sun" android:gravity="center" android:textSize="10sp" android:textColor="@color/widget_text_secondary" />
 
         </LinearLayout>
 

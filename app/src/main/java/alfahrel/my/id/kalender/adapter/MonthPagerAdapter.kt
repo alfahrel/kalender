@@ -1,8 +1,8 @@
-package kalender.alfahrel.my.id.adapter
+package alfahrel.my.id.kalender.adapter
 
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import kalender.alfahrel.my.id.fragment.MonthFragment
+import alfahrel.my.id.kalender.fragment.MonthFragment
 
 class MonthPagerAdapter(private val activity: FragmentActivity) : FragmentStateAdapter(activity) {
 

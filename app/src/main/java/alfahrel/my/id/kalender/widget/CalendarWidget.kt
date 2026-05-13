@@ -1,4 +1,4 @@
-package kalender.alfahrel.my.id.widget
+package alfahrel.my.id.kalender.widget
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -11,21 +11,21 @@ import android.net.Uri
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import kalender.alfahrel.my.id.MainActivity
-import kalender.alfahrel.my.id.R
-import kalender.alfahrel.my.id.data.AppPreferences
-import kalender.alfahrel.my.id.data.CountryHolidays
-import kalender.alfahrel.my.id.model.HolidayType
-import kalender.alfahrel.my.id.util.LocaleHelper
+import alfahrel.my.id.kalender.MainActivity
+import alfahrel.my.id.kalender.R
+import alfahrel.my.id.kalender.data.AppPreferences
+import alfahrel.my.id.kalender.data.CountryHolidays
+import alfahrel.my.id.kalender.model.HolidayType
+import alfahrel.my.id.kalender.util.LocaleHelper
 import java.util.Calendar
 
 class CalendarWidget : AppWidgetProvider() {
 
     companion object {
         const val TAG = "CalendarWidget"
-        const val ACTION_PREV = "kalender.alfahrel.my.id.WIDGET_PREV"
-        const val ACTION_NEXT = "kalender.alfahrel.my.id.WIDGET_NEXT"
-        const val ACTION_MIDNIGHT_UPDATE = "kalender.alfahrel.my.id.WIDGET_MIDNIGHT_UPDATE"
+        const val ACTION_PREV = "alfahrel.my.id.kalender.WIDGET_PREV"
+        const val ACTION_NEXT = "alfahrel.my.id.kalender.WIDGET_NEXT"
+        const val ACTION_MIDNIGHT_UPDATE = "alfahrel.my.id.kalender.WIDGET_MIDNIGHT_UPDATE"
         const val EXTRA_WIDGET = "widget_id"
         private const val MIDNIGHT_ALARM_REQUEST_CODE = 999
 
@@ -263,7 +263,7 @@ class CalendarFactory(
         val tmpCal = Calendar.getInstance().apply { set(year, month, 1) }
         val today = Calendar.getInstance()
 
-        var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 2
+        var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 1
         if (firstDow < 0) firstDow = 6
 
         // Leading (prev month)

@@ -1,4 +1,4 @@
-package kalender.alfahrel.my.id.fragment
+package alfahrel.my.id.kalender.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kalender.alfahrel.my.id.MainActivity
-import kalender.alfahrel.my.id.R
-import kalender.alfahrel.my.id.adapter.CalendarAdapter
-import kalender.alfahrel.my.id.model.CalendarDay
+import alfahrel.my.id.kalender.MainActivity
+import alfahrel.my.id.kalender.R
+import alfahrel.my.id.kalender.adapter.CalendarAdapter
+import alfahrel.my.id.kalender.model.CalendarDay
 import java.util.Calendar
 
 class MonthFragment : Fragment() {
@@ -63,7 +63,7 @@ class MonthFragment : Fragment() {
         val today = Calendar.getInstance()
 
         // Leading (prev month)
-        var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 2
+        var firstDow = tmpCal.get(Calendar.DAY_OF_WEEK) - 1
         if (firstDow < 0) firstDow = 6
 
         val prevCal = Calendar.getInstance().apply {

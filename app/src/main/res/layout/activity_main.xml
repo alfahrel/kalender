@@ -44,16 +44,16 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp">
 
+                <TextView
+                    style="@style/DayLabelStyle"
+                    android:text="@string/day_sun"
+                    android:textColor="?attr/colorError" />
                 <TextView style="@style/DayLabelStyle" android:text="@string/day_mon" />
                 <TextView style="@style/DayLabelStyle" android:text="@string/day_tue" />
                 <TextView style="@style/DayLabelStyle" android:text="@string/day_wed" />
                 <TextView style="@style/DayLabelStyle" android:text="@string/day_thu" />
                 <TextView style="@style/DayLabelStyle" android:text="@string/day_fri" />
                 <TextView style="@style/DayLabelStyle" android:text="@string/day_sat" />
-                <TextView
-                    style="@style/DayLabelStyle"
-                    android:text="@string/day_sun"
-                    android:textColor="?attr/colorError" />
 
             </LinearLayout>
 

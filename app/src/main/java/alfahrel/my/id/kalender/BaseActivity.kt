@@ -1,9 +1,9 @@
-package kalender.alfahrel.my.id
+package alfahrel.my.id.kalender
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
-import kalender.alfahrel.my.id.data.AppPreferences
-import kalender.alfahrel.my.id.util.LocaleHelper
+import alfahrel.my.id.kalender.data.AppPreferences
+import alfahrel.my.id.kalender.util.LocaleHelper
 
 open class BaseActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
